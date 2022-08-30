@@ -1,0 +1,43 @@
+drop database if exists aula;
+
+create database aula;
+
+use aula;
+
+drop table if exists estado;
+
+create table estado(
+id INT auto_increment
+,nome VARCHAR(200) not null unique
+,sigla CHAR(2) not null unique
+,ativo CHAR(1) not null default 'S'
+,data_cadastro DATETIME not null default current_timestamp
+-- , CHECK ( ativo IN ('S', 'N') )
+, constraint pk_estado PRIMARY KEY (id)
+, constraint coluna_ativo_deve_ser_S_ou_N CHECK ( ativo IN ('S', 'N') )
+);
+
+-- insert into estado(id,nome,sigla,ativo,data_cadastro) VALUES (2, 'PARANÁ','PR','S','2022-08-28');
+-- insert into estado(id,nome,sigla,ativo,data_cadastro) VALUES (3, 'SÃO PAULO','SP','A','2022-08-28');
+
+insert into estado(nome,sigla) VALUES ('PARANÁ','PR');
+
+insert into estado(nome,sigla) VALUES ('SÃO PAULO','SP');
+
+select id,nome,sigla,ativo,data_cadastro from estado;
+
+CREATE TABLE cidade (
+id INT NOT NULL AUTO_INCREMENT
+,nome VARCHAR(200) NOT NULL
+,ativo CHAR(1) NOT NULL DEFAULT 'S'
+,data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+,estado_id INT NOT NULL
+, CONSTRAINT pk_cidade PRIMARY KEY (id)
+, CONSTRAINT fk_cidade_estado FOREIGN KEY (estado_id) REFERENCES estado (id)
+, CONSTRAINT cidade_ativo_deve_ser_S_ou_N CHECK (ativo IN ('S','N'))
+, CONSTRAINT cidade_unica UNIQUE(nome, estado_id)
+);
+
+INSERT INTO cidade (nome,estado_id) VALUES ('CURITIBA' , 1);
+
+SELECT * FROM CIDADE;
