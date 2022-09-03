@@ -1,0 +1,68 @@
+DROP DATABASE IF EXISTS aula_banco;
+CREATE DATABASE aula_banco; 		-- criar aula_banco
+USE aula_banco;						-- selecionar aula_banco
+
+CREATE TABLE estado( 				-- criando a tabela estado
+id INT NOT NULL AUTO_INCREMENT
+,nome VARCHAR(200) NOT NULL UNIQUE  
+,sigla CHAR(2) NOT NULL UNIQUE
+,ativo ENUM('S','N') NOT NULL DEFAULT 'S'
+,data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+,CONSTRAINT pk_estado PRIMARY KEY (id)  
+);
+
+CREATE TABLE cidade (				-- criando a tabela cidade
+id INT NOT NULL AUTO_INCREMENT
+,nome VARCHAR(200)  NOT NULL
+,ativo ENUM('S','N') NOT NULL DEFAULT 'S'
+,data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+,estado_id INT NOT NULL 
+,CONSTRAINT pk_cidade PRIMARY KEY (id)
+,CONSTRAINT fk_cidade_estado FOREIGN KEY (estado_id) REFERENCES estado (id)
+,CONSTRAINT cidade_unica UNIQUE(nome, estado_id)
+);
+
+-- inserindo estados
+INSERT INTO estado (nome, sigla, ativo, data_cadastro) VALUES ('SÃO PAULO','SP','S','2015-10-31');
+INSERT INTO estado (nome, sigla, ativo, data_cadastro) VALUES ('PARANÁ','PR','S','2015-2-25');
+INSERT INTO estado (nome, sigla, ativo, data_cadastro) VALUES ('MATO GROSSO','MT','N','2015-12-02');
+
+-- inserindo cidades
+INSERT INTO cidade (nome, estado_id) VALUES ('BAURU',1);
+INSERT INTO cidade (nome, estado_id) VALUES ('MARINGÁ',2);
+INSERT INTO cidade (nome, estado_id) VALUES ('BARRA DOS GARÇAS',3);
+
+SELECT *
+FROM estado, cidade;
+
+/*
+01 - O que é JOIN? Quando é necessário?
+02 - Qual a sintaxe do JOIN? Maiúscula ou minúscula faz diferença? Existe algum padrão? Explique.
+04 - O que é primordial para que o resultado tenha sentido em consultas com JOIN? Explique.
+05 - Existe mais de uma maneira de realizar o JOIN? Quantas? Qual é a mais eficiente? 
+*/
+
+/*Questão 1
+JOIN é a junção de uma ou mais tabelas. Ele é necessário para se melhor vizualizar as informações disponíveis, especialmente quando uma tabela esteja referenciando uma outra atráves de uma chave estrangeira,
+o que faz acessar uma tabela ter informação incompleta ou difícil de entender.
+
+Questão 2
+SELECT 	*
+FROM estado, cidade
+WHERE cidade.estado_id = estado.id;
+			OU
+SELECT *
+FROM estado
+JOIN cidade ON cidade.estado_id = estado.id;
+
+Acima são duas das maneiras de criar o JOIN, letra maiúscula ou minuscula não faz diferença, mas é importante definir um padrão para evitar confusçao na hora de saber o que é nome e o que é
+função, o que também contribui para deixar a tela menos poluida e mais organizada
+
+
+Questão 4
+É absolutamente necessário deixar o JOIN organizado para poder ter facilidade em interpretar seus dados, se o usuário apenas pedir toda a informação ao usar o JOIN, ela não vai ser apresentada
+de maneira organizada, para isso é necessário especificar quais colunas você quer acessar, além de usar um idenficador para mostrar apenas o requirido, e não todas as informações armazenadas naquela coluna
+
+Questão 5
+Sim, existem duas maneiras maneiras, a do SQL 89 e do SQL 92, as duas maneiras são equivalente no caso de eficiência, deixando seu uso mais para preferência ou se a plataforma suporta sua versão,
+mas é recomendado proficiência nas duas para não ser pego desprevenido no caso de ser requerido o uso de uma versão em específico.
